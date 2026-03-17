@@ -10,9 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * REST endpoints for time synchronization operations.
- */
+
 @RestController
 @RequiredArgsConstructor
 public class ClockController {
@@ -23,6 +21,7 @@ public class ClockController {
 
     @GetMapping("/health")
     public ResponseEntity<Map<String, String>> health() {
+
         return ResponseEntity.ok(Map.of("status", "UP", "nodeId", config.getNodeId()));
     }
 
@@ -34,6 +33,7 @@ public class ClockController {
         status.put("syncSuccessful", networkTimeService.isSyncSuccessful());
         status.put("lamportTime", logicalClock.getTime());
         status.put("correctedTime", networkTimeService.getCorrectedTime());
+
         return ResponseEntity.ok(status);
     }
 
@@ -48,9 +48,12 @@ public class ClockController {
     public ResponseEntity<Map<String, Object>> recordEvent(@RequestBody(required = false) Map<String, Object> eventData) {
         long logicalTime;
         if (eventData != null && eventData.containsKey("receivedLogicalTime")) {
+
             long receivedTime = ((Number) eventData.get("receivedLogicalTime")).longValue();
             logicalTime = logicalClock.receive(receivedTime);
-        } else {
+
+        } else 
+        {
             logicalTime = logicalClock.tick();
         }
 
@@ -58,6 +61,7 @@ public class ClockController {
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", timestamp);
         response.put("nodeId", config.getNodeId());
+        
         return ResponseEntity.ok(response);
     }
 }
