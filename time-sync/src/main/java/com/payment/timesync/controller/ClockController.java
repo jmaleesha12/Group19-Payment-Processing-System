@@ -17,7 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ClockController {
 
-     private final NetworkTimeService networkTimeService;
+    private final NetworkTimeService networkTimeService;
     private final LogicalClock logicalClock;
     private final ClockConfig config;
 
@@ -36,5 +36,28 @@ public class ClockController {
         status.put("correctedTime", networkTimeService.getCorrectedTime());
         return ResponseEntity.ok(status);
     }
-    
+
+    @GetMapping("/time/now")
+    public ResponseEntity<HybridTimestamp> getCurrentTime() {
+        long logicalTime = logicalClock.tick();
+        HybridTimestamp timestamp = HybridTimestamp.nowWithOffset(networkTimeService.getOffset(), logicalTime);
+        return ResponseEntity.ok(timestamp);
+    }
+
+    @PostMapping("/time/event")
+    public ResponseEntity<Map<String, Object>> recordEvent(@RequestBody(required = false) Map<String, Object> eventData) {
+        long logicalTime;
+        if (eventData != null && eventData.containsKey("receivedLogicalTime")) {
+            long receivedTime = ((Number) eventData.get("receivedLogicalTime")).longValue();
+            logicalTime = logicalClock.receive(receivedTime);
+        } else {
+            logicalTime = logicalClock.tick();
+        }
+
+        HybridTimestamp timestamp = HybridTimestamp.nowWithOffset(networkTimeService.getOffset(), logicalTime);
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", timestamp);
+        response.put("nodeId", config.getNodeId());
+        return ResponseEntity.ok(response);
+    }
 }
