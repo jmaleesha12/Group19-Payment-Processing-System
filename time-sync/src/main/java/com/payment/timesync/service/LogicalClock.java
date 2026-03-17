@@ -11,4 +11,20 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class LogicalClock {
 
+      private final AtomicLong timestamp = new AtomicLong(0);
+
+    public long tick() {
+        return timestamp.incrementAndGet();
+    }
+
+    public long update(long receivedTimestamp) {
+        long newTime;
+        while (true) {
+            long current = timestamp.get();
+            newTime = Math.max(current, receivedTimestamp) + 1;
+            if (timestamp.compareAndSet(current, newTime)) break;
+        }
+        return newTime;
+    }
+
 }
