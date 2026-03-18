@@ -26,5 +26,16 @@ public class LogicalClock {
         }
         return newTime;
     }
+      public long getTime() {
+        return timestamp.get();
+    }
+
+    public long send() {
+        return tick();
+    }
+
+    public long receive(long messageTimestamp) {
+        return update(messageTimestamp);
+    }
 
 }
