@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Logical clock implementation for event ordering.
  */
+
 @Slf4j
 @Service
 public class LogicalClock {
@@ -26,6 +27,7 @@ public class LogicalClock {
         }
         return newTime;
     }
+
       public long getTime() {
         return timestamp.get();
     }
@@ -33,6 +35,7 @@ public class LogicalClock {
     public long send() {
         return tick();
     }
+
 
     public long receive(long messageTimestamp) {
         return update(messageTimestamp);
