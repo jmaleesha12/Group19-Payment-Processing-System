@@ -52,5 +52,34 @@ public class NetworkTimeService {
         }
     }
 
+      private long calculateNtpOffset() throws Exception {
+        try (DatagramSocket socket = new DatagramSocket()) {
+            socket.setSoTimeout(config.getNtpTimeout());
+            InetAddress address = InetAddress.getByName(config.getNtpServer());
+
+            byte[] ntpRequest = createNtpRequestPacket();
+            long t1 = System.currentTimeMillis();
+
+            DatagramPacket requestPacket = new DatagramPacket(ntpRequest, ntpRequest.length, address, config.getNtpPort());
+            socket.send(requestPacket);
+
+            byte[] ntpResponse = new byte[NTP_PACKET_SIZE];
+            DatagramPacket responsePacket = new DatagramPacket(ntpResponse, ntpResponse.length);
+            socket.receive(responsePacket);
+
+            long t4 = System.currentTimeMillis();
+            long t2 = extractNtpTimestamp(ntpResponse, 32);
+            long t3 = extractNtpTimestamp(ntpResponse, 40);
+
+            return ((t2 - t1) + (t3 - t4)) / 2;
+        }
+    }
+
+    private byte[] createNtpRequestPacket() {
+        byte[] packet = new byte[NTP_PACKET_SIZE];
+        packet[0] = 0x1B;
+        return packet;
+    }
+
    
 }
