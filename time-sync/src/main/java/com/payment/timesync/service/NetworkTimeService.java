@@ -37,5 +37,20 @@ public class NetworkTimeService {
         syncWithNtp();
     }
 
+     public void syncWithNtp() {
+        try {
+            long offset = calculateNtpOffset();
+            ntpOffset.set(offset);
+            lastSyncTime = System.currentTimeMillis();
+            syncSuccessful = true;
+            lastError = null;
+            log.info("NTP sync successful. Offset: {} ms", offset);
+        } catch (Exception e) {
+            syncSuccessful = false;
+            lastError = e.getMessage();
+            log.error("NTP sync failed: {}", e.getMessage());
+        }
+    }
+
    
 }
