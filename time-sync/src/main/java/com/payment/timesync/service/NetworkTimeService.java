@@ -81,5 +81,22 @@ public class NetworkTimeService {
         return packet;
     }
 
+     private long extractNtpTimestamp(byte[] packet, int offset) {
+        long seconds = ((long)(packet[offset] & 0xFF) << 24) | ((long)(packet[offset+1] & 0xFF) << 16) |
+                       ((long)(packet[offset+2] & 0xFF) << 8) | ((long)(packet[offset+3] & 0xFF));
+        long fraction = ((long)(packet[offset+4] & 0xFF) << 24) | ((long)(packet[offset+5] & 0xFF) << 16) |
+                        ((long)(packet[offset+6] & 0xFF) << 8) | ((long)(packet[offset+7] & 0xFF));
+        long unixSeconds = seconds - NTP_EPOCH_OFFSET;
+        long unixMillis = (fraction * 1000) / 0x100000000L;
+        return (unixSeconds * 1000) + unixMillis;
+    }
+
+    public long getOffset() {
+        return ntpOffset.get();
+    }
+
+    public long getCorrectedTime() {
+        return System.currentTimeMillis() + ntpOffset.get();
+    }
    
 }
