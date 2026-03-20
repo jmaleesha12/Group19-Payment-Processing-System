@@ -13,6 +13,7 @@ import java.util.concurrent.atomic.AtomicLong;
 /**
  * Synchronizes with NTP servers to get accurate physical time.
  */
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -88,6 +89,7 @@ public class NetworkTimeService {
                         ((long)(packet[offset+6] & 0xFF) << 8) | ((long)(packet[offset+7] & 0xFF));
         long unixSeconds = seconds - NTP_EPOCH_OFFSET;
         long unixMillis = (fraction * 1000) / 0x100000000L;
+
         return (unixSeconds * 1000) + unixMillis;
     }
 
