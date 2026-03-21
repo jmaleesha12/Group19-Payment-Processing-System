@@ -16,6 +16,6 @@ public class ClockConfig {
     private String nodeId = "node1";
     private String ntpServer = "pool.ntp.org";
     private int ntpPort = 123;
-    private long syncIntervalMs = ;
-    private int ntpTimeout = 5000;
+    private long syncIntervalMs = 60000 ;
+    private int ntpTimeout = ;
 }
